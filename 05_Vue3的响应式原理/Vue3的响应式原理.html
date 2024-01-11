@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        // 源数据
+        let person = {
+            name: '张三',
+            age: 18
+        }
+        // 模拟Vue2中的实现响应式
+        let p = {}
+        Object.defineProperty(p, 'name', {
+            // 读取name时调用
+            get() {
+                return person.name
+            },
+            // 修改name时调用
+            set(value) {
+                person.name = value
+            }
+        })
+
+        Object.defineProperty(p, 'age', {
+            // 读取age时调用
+            get() {
+                return person.age
+            },
+            // 修改age时调用
+            set(value) {
+                person.age = value
+            }
+        })
+
+        // 模拟Vue3中实现响应式
+        // #region
+        // const p = new Proxy(person, {
+        //     get(target, propName) {
+        //         console.log(`有人读取了p身上的${propName}属性`);
+        //         return target[propName]
+        //     },
+        //     set(target, propName, value) {
+        //         console.log(`有人修改了p身上的${propName}属性，要去更新界面了`);
+        //         target[propName] = value
+        //     },
+        //     deleteProperty(target, propName) {
+        //         console.log(`有人删除了p身上的${propName}属性，要去更新界面了`);
+        //         return delete target[propName]
+        //     }
+        // })
+        // #endregion
+        
+        const p = new Proxy(person, {
+            // target为原对象person
+            // 拦截读取属性值
+            get(target, propName) {
+                console.log(`读取了p的${propName}属性`);
+                return Reflect.get(target, propName)
+            },
+            // 拦截修改属性值或添加新属性
+            set(target, propName, value) {
+                console.log(`修改了p的${propName}属性值为${newVal}，要去更新界面了`);
+                Reflect.set(target, propName, value)
+            },
+            // 拦截删除属性
+            deleteProperty(target, propName) {
+                console.log(`删除了p的${propName}属性，要去更新界面了`);
+                return Reflect.deleteProperty(target, propName)
+            }
+        })
+    </script>
+</body>
+
+</html>
